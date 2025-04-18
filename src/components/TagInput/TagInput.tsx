@@ -63,6 +63,7 @@ const TagInput: React.FC<TagInputProps> = ({
       color: randomColor,
     };
 
+    // Add tag to the global store
     addTag(newTag);
     toast({
       title: "Tag created",
@@ -72,13 +73,16 @@ const TagInput: React.FC<TagInputProps> = ({
     return newTag;
   };
 
+  // This function handles selecting from the dropdown list
   const handleSelect = async (currentValue: string) => {
     if (currentValue === 'create' && value.trim()) {
+      // Create new tag and add it to the task
       const newTag = await handleCreateNewTag(value);
       if (newTag) {
         onAddTag(newTag);
       }
     } else {
+      // Select existing tag
       const selectedTag = tags.find((tag) => tag?.id === currentValue);
       if (selectedTag) {
         onAddTag(selectedTag);
@@ -88,12 +92,15 @@ const TagInput: React.FC<TagInputProps> = ({
     setOpen(false);
   };
 
-  // Create tag directly when clicked - Fixed to ensure tag is added to task
+  // This function handles the explicit "Create tag" button click
   const handleCreateClick = async () => {
     if (value.trim()) {
+      console.log("Creating new tag:", value);
       const newTag = await handleCreateNewTag(value);
       if (newTag) {
-        onAddTag(newTag); // This adds the tag to the task
+        console.log("New tag created:", newTag);
+        // This is the critical line - ensure we call onAddTag with the new tag
+        onAddTag(newTag);
         setValue("");
         setOpen(false);
       }
