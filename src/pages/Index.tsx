@@ -2,36 +2,28 @@
 import React from 'react';
 import TaskForm from '@/components/TaskForm/TaskForm';
 import TaskCard from '@/components/TaskCard/TaskCard';
+import { useTaskStore } from '@/store/taskStore';
 
 const Index = () => {
-  const demoTags = [
-    { id: '1', name: 'Backend', color: 'bg-blue-500' },
-    { id: '2', name: 'UI', color: 'bg-purple-500' },
-  ];
+  const tasks = useTaskStore(state => state.tasks);
 
   return (
     <div className="container mx-auto p-6 space-y-8">
-      <div>
-        <h2 className="text-2xl font-bold mb-4">Task Form (Module 1)</h2>
-        <TaskForm
-          priority="medium"
-          status="in_progress"
-          tags={demoTags}
-          onPriorityChange={(p) => console.log('Priority changed:', p)}
-          onStatusChange={(s) => console.log('Status changed:', s)}
-        />
-      </div>
-
-      <div>
-        <h2 className="text-2xl font-bold mb-4">Task Card (Module 1)</h2>
-        <div className="max-w-md">
-          <TaskCard
-            title="Task Title Here"
-            priority="high"
-            dueDate={new Date('2025-11-15')}
-            tags={demoTags}
-            isUrgent={true}
-          />
+      <TaskForm />
+      
+      <div className="space-y-4">
+        <h2 className="text-2xl font-bold">Tasks</h2>
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {tasks.map((task) => (
+            <TaskCard
+              key={task.id}
+              title={task.title}
+              priority={task.priority}
+              dueDate={task.dueDate}
+              tags={task.tags}
+              isUrgent={task.isUrgent || false}
+            />
+          ))}
         </div>
       </div>
     </div>

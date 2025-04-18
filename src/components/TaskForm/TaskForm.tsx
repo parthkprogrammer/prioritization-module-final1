@@ -1,51 +1,127 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import PrioritySelector from '@/components/PrioritySelector/PrioritySelector';
 import StatusSelector from '@/components/StatusSelector/StatusSelector';
 import TagList from '@/components/TagList/TagList';
+import TagInput from '@/components/TagInput/TagInput';
 import { Label } from "@/components/ui/label";
 import { PriorityLevel, StatusType, Tag } from '@/types';
+import { useTaskStore } from '@/store/taskStore';
+import { CalendarIcon, Clock } from 'lucide-react';
 
-interface TaskFormProps {
-  priority: PriorityLevel | null;
-  status: StatusType | null;
-  tags: Tag[];
-  onPriorityChange: (priority: PriorityLevel) => void;
-  onStatusChange: (status: StatusType) => void;
-}
+const TaskForm = () => {
+  const [title, setTitle] = useState('');
+  const [dueDate, setDueDate] = useState('');
+  const [dueTime, setDueTime] = useState('');
+  const [priority, setPriority] = useState<PriorityLevel>('medium');
+  const [status, setStatus] = useState<StatusType>('todo');
+  const [tags, setTags] = useState<Tag[]>([]);
+  const addTask = useTaskStore(state => state.addTask);
 
-const TaskForm: React.FC<TaskFormProps> = ({
-  priority,
-  status,
-  tags,
-  onPriorityChange,
-  onStatusChange,
-}) => {
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    addTask({
+      title,
+      dueDate: new Date(dueDate),
+      dueTime,
+      priority,
+      status,
+      tags,
+    });
+    // Reset form
+    setTitle('');
+    setDueDate('');
+    setDueTime('');
+    setPriority('medium');
+    setStatus('todo');
+    setTags([]);
+  };
+
   return (
-    <Card className="p-6 space-y-6">
-      <div className="space-y-4">
+    <Card className="p-6">
+      <h2 className="text-2xl font-bold mb-6">Create Task</h2>
+      <form onSubmit={handleSubmit} className="space-y-6">
         <div className="space-y-2">
-          <Label htmlFor="priority">Priority:</Label>
+          <Label htmlFor="title">Title</Label>
+          <div className="relative">
+            <Input
+              id="title"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="Enter task title"
+              className="pr-10"
+              required
+            />
+          </div>
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="dueDate">Due Date</Label>
+          <div className="relative">
+            <Input
+              id="dueDate"
+              type="date"
+              value={dueDate}
+              onChange={(e) => setDueDate(e.target.value)}
+              className="pr-10"
+              required
+            />
+            <CalendarIcon className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
+          </div>
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="dueTime">Due Time</Label>
+          <div className="relative">
+            <Input
+              id="dueTime"
+              type="time"
+              value={dueTime}
+              onChange={(e) => setDueTime(e.target.value)}
+              className="pr-10"
+              required
+            />
+            <Clock className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
+          </div>
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="priority">Priority</Label>
           <PrioritySelector
             currentPriority={priority}
-            onChange={onPriorityChange}
+            onChange={setPriority}
           />
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="status">Status:</Label>
+          <Label htmlFor="status">Status</Label>
           <StatusSelector
             currentStatus={status}
-            onChange={onStatusChange}
+            onChange={setStatus}
           />
         </div>
 
         <div className="space-y-2">
-          <Label>Tags:</Label>
-          <TagList tags={tags} readOnly />
+          <Label>Tags</Label>
+          <div className="flex gap-2">
+            <TagInput 
+              assignedTags={tags}
+              onAddTag={(tag) => setTags([...tags, tag])}
+            />
+          </div>
+          <TagList
+            tags={tags}
+            onRemoveTag={(tagId) => setTags(tags.filter(tag => tag.id !== tagId))}
+          />
         </div>
-      </div>
+
+        <Button type="submit" className="w-full md:w-auto">
+          Add Task
+        </Button>
+      </form>
     </Card>
   );
 };
