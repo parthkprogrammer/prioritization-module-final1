@@ -123,14 +123,15 @@ const TagInput: React.FC<TagInputProps> = ({
           <CommandList>
             <CommandEmpty className="py-2 px-2 text-sm">
               {value.trim() && (
-                <button 
-                  className="flex w-full items-center px-2 py-1.5 text-sm rounded-sm cursor-pointer hover:bg-accent hover:text-accent-foreground"
+                <Button 
+                  className="flex w-full items-center px-2 py-1.5 text-sm cursor-pointer hover:bg-accent hover:text-accent-foreground"
                   onClick={handleCreateClick}
                   type="button"
+                  variant="ghost"
                 >
                   <PlusCircle className="mr-2 h-4 w-4" />
                   Create "{value}"
-                </button>
+                </Button>
               )}
               {!value.trim() && "No tags found."}
             </CommandEmpty>
