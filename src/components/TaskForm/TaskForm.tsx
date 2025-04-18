@@ -1,9 +1,9 @@
 
 import React from 'react';
 import { Card } from "@/components/ui/card";
-import { PrioritySelector } from '@/components/PrioritySelector/PrioritySelector';
-import { StatusSelector } from '@/components/StatusSelector/StatusSelector';
-import { TagList } from '@/components/TagList/TagList';
+import PrioritySelector from '@/components/PrioritySelector/PrioritySelector';
+import StatusSelector from '@/components/StatusSelector/StatusSelector';
+import TagList from '@/components/TagList/TagList';
 import { Label } from "@/components/ui/label";
 import { PriorityLevel, StatusType, Tag } from '@/types';
 

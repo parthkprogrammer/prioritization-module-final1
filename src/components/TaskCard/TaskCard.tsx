@@ -2,8 +2,8 @@
 import React from 'react';
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { TagList } from '@/components/TagList/TagList';
-import { UrgencyIndicator } from '@/components/UrgencyIndicator/UrgencyIndicator';
+import TagList from '@/components/TagList/TagList';
+import UrgencyIndicator from '@/components/UrgencyIndicator/UrgencyIndicator';
 import { PriorityLevel, Tag } from '@/types';
 import { getPriorityStyle } from '@/utils/stylingUtils';
 import { format } from 'date-fns';
