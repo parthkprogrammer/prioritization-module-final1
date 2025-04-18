@@ -87,6 +87,13 @@ const TagInput: React.FC<TagInputProps> = ({
     setOpen(false);
   };
 
+  // Simple click handler for creating a new tag
+  const handleCreateClick = () => {
+    if (value.trim()) {
+      handleSelect('create');
+    }
+  };
+
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
@@ -111,14 +118,13 @@ const TagInput: React.FC<TagInputProps> = ({
           <CommandList>
             <CommandEmpty className="py-2 px-2 text-sm">
               {value.trim() && (
-                <CommandItem
-                  value="create"
-                  className="cursor-pointer"
-                  onSelect={handleSelect}
+                <div 
+                  className="flex items-center px-2 py-1.5 text-sm rounded-sm cursor-pointer hover:bg-accent hover:text-accent-foreground"
+                  onClick={handleCreateClick}
                 >
                   <PlusCircle className="mr-2 h-4 w-4" />
                   Create "{value}"
-                </CommandItem>
+                </div>
               )}
               {!value.trim() && "No tags found."}
             </CommandEmpty>
