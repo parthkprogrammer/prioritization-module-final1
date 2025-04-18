@@ -14,8 +14,16 @@ interface TagStore {
   setError: (error: string | null) => void;
 }
 
+// Initial tags for demo
+const initialTags: Tag[] = [
+  { id: '1', name: 'Work', color: 'bg-blue-500' },
+  { id: '2', name: 'Personal', color: 'bg-green-500' },
+  { id: '3', name: 'Urgent', color: 'bg-red-500' },
+  { id: '4', name: 'Meeting', color: 'bg-purple-500' },
+];
+
 export const useTagStore = create<TagStore>((set) => ({
-  tags: [],
+  tags: initialTags,
   isLoading: false,
   error: null,
   setTags: (tags) => set({ tags }),

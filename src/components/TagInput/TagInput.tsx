@@ -33,8 +33,9 @@ const TagInput: React.FC<TagInputProps> = ({
 }) => {
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState("");
-  const { tags } = useTagStore();
+  const { tags = [] } = useTagStore() || { tags: [] };
 
+  // Ensure we're not filtering undefined values
   const availableTags = tags.filter(
     (tag) => !assignedTags.find((assigned) => assigned.id === tag.id)
   );
