@@ -8,6 +8,7 @@ import {
   CommandGroup,
   CommandInput,
   CommandItem,
+  CommandList,
 } from "@/components/ui/command";
 import {
   Popover,
@@ -89,44 +90,46 @@ const TagInput: React.FC<TagInputProps> = ({
             value={value}
             onValueChange={setValue}
           />
-          <CommandEmpty className="py-2 px-2 text-sm">
-            {onCreateTag && value.trim() && (
-              <Button
-                variant="ghost"
-                className="w-full justify-start"
-                onClick={() => handleSelect('create')}
-              >
-                <PlusCircle className="mr-2 h-4 w-4" />
-                Create "{value}"
-              </Button>
-            )}
-            {(!onCreateTag || !value.trim()) && "No tags found."}
-          </CommandEmpty>
-          {availableTags.length > 0 && (
-            <CommandGroup>
-              {availableTags.map((tag) => (
-                <CommandItem
-                  key={tag.id}
-                  value={tag.id}
-                  onSelect={handleSelect}
+          <CommandList>
+            <CommandEmpty className="py-2 px-2 text-sm">
+              {onCreateTag && value.trim() && (
+                <Button
+                  variant="ghost"
+                  className="w-full justify-start"
+                  onClick={() => handleSelect('create')}
                 >
-                  <div
-                    className={cn(
-                      "w-2 h-2 rounded-full mr-2",
-                      tag.color || "bg-gray-500"
-                    )}
-                  />
-                  {tag.name}
-                  <CheckIcon
-                    className={cn(
-                      "ml-auto h-4 w-4",
-                      value === tag.id ? "opacity-100" : "opacity-0"
-                    )}
-                  />
-                </CommandItem>
-              ))}
-            </CommandGroup>
-          )}
+                  <PlusCircle className="mr-2 h-4 w-4" />
+                  Create "{value}"
+                </Button>
+              )}
+              {(!onCreateTag || !value.trim()) && "No tags found."}
+            </CommandEmpty>
+            {availableTags.length > 0 && (
+              <CommandGroup>
+                {availableTags.map((tag) => (
+                  <CommandItem
+                    key={tag.id}
+                    value={tag.id}
+                    onSelect={handleSelect}
+                  >
+                    <div
+                      className={cn(
+                        "w-2 h-2 rounded-full mr-2",
+                        tag.color || "bg-gray-500"
+                      )}
+                    />
+                    {tag.name}
+                    <CheckIcon
+                      className={cn(
+                        "ml-auto h-4 w-4",
+                        value === tag.id ? "opacity-100" : "opacity-0"
+                      )}
+                    />
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+            )}
+          </CommandList>
         </Command>
       </PopoverContent>
     </Popover>
