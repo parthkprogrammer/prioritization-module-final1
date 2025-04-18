@@ -36,19 +36,19 @@ const TagInput: React.FC<TagInputProps> = ({
   const [availableTags, setAvailableTags] = useState<Tag[]>([]);
   
   // Get tags from store safely
-  const tagStore = useTagStore();
-  const tags = tagStore?.tags || [];
+  const { tags = [] } = useTagStore() || {}; // Use destructuring with default empty array
 
   // Update available tags whenever tags or assignedTags change
   useEffect(() => {
-    if (Array.isArray(tags) && Array.isArray(assignedTags)) {
-      const filteredTags = tags.filter(
-        (tag) => !assignedTags.some((assigned) => assigned.id === tag.id)
-      );
-      setAvailableTags(filteredTags);
-    } else {
+    if (!Array.isArray(tags) || !Array.isArray(assignedTags)) {
       setAvailableTags([]);
+      return;
     }
+
+    const filteredTags = tags.filter(
+      (tag) => !assignedTags.some((assigned) => assigned?.id === tag?.id)
+    );
+    setAvailableTags(filteredTags);
   }, [tags, assignedTags]);
 
   const handleSelect = async (currentValue: string) => {
@@ -100,29 +100,31 @@ const TagInput: React.FC<TagInputProps> = ({
             )}
             {(!onCreateTag || !value.trim()) && "No tags found."}
           </CommandEmpty>
-          <CommandGroup>
-            {availableTags.map((tag) => (
-              <CommandItem
-                key={tag.id}
-                value={tag.id}
-                onSelect={handleSelect}
-              >
-                <div
-                  className={cn(
-                    "w-2 h-2 rounded-full mr-2",
-                    tag.color || "bg-gray-500"
-                  )}
-                />
-                {tag.name}
-                <CheckIcon
-                  className={cn(
-                    "ml-auto h-4 w-4",
-                    value === tag.id ? "opacity-100" : "opacity-0"
-                  )}
-                />
-              </CommandItem>
-            ))}
-          </CommandGroup>
+          {Array.isArray(availableTags) && availableTags.length > 0 && (
+            <CommandGroup>
+              {availableTags.map((tag) => (
+                <CommandItem
+                  key={tag.id}
+                  value={tag.id}
+                  onSelect={handleSelect}
+                >
+                  <div
+                    className={cn(
+                      "w-2 h-2 rounded-full mr-2",
+                      tag.color || "bg-gray-500"
+                    )}
+                  />
+                  {tag.name}
+                  <CheckIcon
+                    className={cn(
+                      "ml-auto h-4 w-4",
+                      value === tag.id ? "opacity-100" : "opacity-0"
+                    )}
+                  />
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          )}
         </Command>
       </PopoverContent>
     </Popover>

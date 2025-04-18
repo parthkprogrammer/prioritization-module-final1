@@ -12,10 +12,14 @@ interface TagListProps {
 }
 
 const TagList: React.FC<TagListProps> = ({
-  tags,
+  tags = [],
   onRemoveTag,
   readOnly = false,
 }) => {
+  if (!Array.isArray(tags) || tags.length === 0) {
+    return null;
+  }
+
   return (
     <div className="flex flex-wrap gap-2">
       {tags.map((tag) => (
@@ -23,7 +27,7 @@ const TagList: React.FC<TagListProps> = ({
           key={tag.id}
           className={cn(
             "inline-flex items-center",
-            tag.color,
+            tag.color || "bg-gray-500",
             !readOnly && "pr-1"
           )}
         >

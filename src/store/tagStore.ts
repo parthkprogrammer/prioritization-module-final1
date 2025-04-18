@@ -26,15 +26,21 @@ export const useTagStore = create<TagStore>((set) => ({
   tags: initialTags,
   isLoading: false,
   error: null,
-  setTags: (tags) => set({ tags }),
-  addTag: (tag) => set((state) => ({ tags: [...state.tags, tag] })),
+  setTags: (tags) => set({ tags: Array.isArray(tags) ? tags : [] }),
+  addTag: (tag) => set((state) => ({ 
+    tags: Array.isArray(state.tags) ? [...state.tags, tag] : [tag] 
+  })),
   updateTag: (tagId, updatedTag) =>
     set((state) => ({
-      tags: state.tags.map((tag) => (tag.id === tagId ? updatedTag : tag)),
+      tags: Array.isArray(state.tags) 
+        ? state.tags.map((tag) => (tag.id === tagId ? updatedTag : tag))
+        : []
     })),
   removeTag: (tagId) =>
     set((state) => ({
-      tags: state.tags.filter((tag) => tag.id !== tagId),
+      tags: Array.isArray(state.tags)
+        ? state.tags.filter((tag) => tag.id !== tagId)
+        : []
     })),
   setLoading: (loading) => set({ isLoading: loading }),
   setError: (error) => set({ error }),

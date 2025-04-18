@@ -25,11 +25,11 @@ const TaskForm = () => {
     e.preventDefault();
     addTask({
       title,
-      dueDate: new Date(dueDate),
+      dueDate: dueDate ? new Date(dueDate) : new Date(),
       dueTime,
       priority,
       status,
-      tags,
+      tags: Array.isArray(tags) ? tags : [],
     });
     // Reset form
     setTitle('');
@@ -38,6 +38,16 @@ const TaskForm = () => {
     setPriority('medium');
     setStatus('todo');
     setTags([]);
+  };
+
+  const handleAddTag = (tag: Tag) => {
+    if (!tag) return;
+    setTags(prevTags => Array.isArray(prevTags) ? [...prevTags, tag] : [tag]);
+  };
+
+  const handleRemoveTag = (tagId: string) => {
+    if (!tagId) return;
+    setTags(prevTags => Array.isArray(prevTags) ? prevTags.filter(tag => tag.id !== tagId) : []);
   };
 
   return (
@@ -108,13 +118,13 @@ const TaskForm = () => {
           <Label>Tags</Label>
           <div className="flex gap-2">
             <TagInput 
-              assignedTags={tags}
-              onAddTag={(tag) => setTags([...tags, tag])}
+              assignedTags={tags || []}
+              onAddTag={handleAddTag}
             />
           </div>
           <TagList
-            tags={tags}
-            onRemoveTag={(tagId) => setTags(tags.filter(tag => tag.id !== tagId))}
+            tags={tags || []}
+            onRemoveTag={handleRemoveTag}
           />
         </div>
 
