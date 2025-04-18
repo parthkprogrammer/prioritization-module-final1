@@ -88,15 +88,14 @@ const TagInput: React.FC<TagInputProps> = ({
   };
 
   // Create tag directly when clicked
-  const handleCreateClick = () => {
+  const handleCreateClick = async () => {
     if (value.trim()) {
-      handleCreateNewTag(value).then(newTag => {
-        if (newTag) {
-          onAddTag(newTag);
-          setValue("");
-          setOpen(false);
-        }
-      });
+      const newTag = await handleCreateNewTag(value);
+      if (newTag) {
+        onAddTag(newTag); // Ensure the tag is added to the task
+        setValue("");
+        setOpen(false);
+      }
     }
   };
 
