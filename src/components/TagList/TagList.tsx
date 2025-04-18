@@ -16,13 +16,16 @@ const TagList: React.FC<TagListProps> = ({
   onRemoveTag,
   readOnly = false,
 }) => {
-  if (!Array.isArray(tags) || tags.length === 0) {
+  // Safely handle tags by ensuring it's an array and has items
+  const safeTags = Array.isArray(tags) ? tags : [];
+  
+  if (safeTags.length === 0) {
     return null;
   }
 
   return (
     <div className="flex flex-wrap gap-2">
-      {tags.map((tag) => (
+      {safeTags.map((tag) => (
         <Badge
           key={tag.id}
           className={cn(

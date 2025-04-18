@@ -26,7 +26,7 @@ interface TagInputProps {
 }
 
 const TagInput: React.FC<TagInputProps> = ({
-  assignedTags = [], // Make sure we default to an empty array
+  assignedTags = [], // Default to empty array
   onAddTag,
   onCreateTag,
   disabled = false,
@@ -35,19 +35,20 @@ const TagInput: React.FC<TagInputProps> = ({
   const [value, setValue] = useState("");
   const [availableTags, setAvailableTags] = useState<Tag[]>([]);
   
-  // Get tags from store safely
-  const { tags = [] } = useTagStore() || {}; // Use destructuring with default empty array
+  // Get tags from store and ensure we have a default empty array
+  const { tags = [] } = useTagStore();
 
   // Update available tags whenever tags or assignedTags change
   useEffect(() => {
-    if (!Array.isArray(tags) || !Array.isArray(assignedTags)) {
-      setAvailableTags([]);
-      return;
-    }
-
-    const filteredTags = tags.filter(
-      (tag) => !assignedTags.some((assigned) => assigned?.id === tag?.id)
+    // Ensure both arrays are defined before filtering
+    const safeAssignedTags = Array.isArray(assignedTags) ? assignedTags : [];
+    const safeTags = Array.isArray(tags) ? tags : [];
+    
+    // Filter out tags that are already assigned
+    const filteredTags = safeTags.filter(
+      (tag) => !safeAssignedTags.some((assigned) => assigned?.id === tag?.id)
     );
+    
     setAvailableTags(filteredTags);
   }, [tags, assignedTags]);
 
@@ -58,7 +59,8 @@ const TagInput: React.FC<TagInputProps> = ({
         onAddTag(newTag);
       }
     } else {
-      const selectedTag = tags.find((tag) => tag.id === currentValue);
+      const tagArray = Array.isArray(tags) ? tags : [];
+      const selectedTag = tagArray.find((tag) => tag?.id === currentValue);
       if (selectedTag) {
         onAddTag(selectedTag);
       }
@@ -100,7 +102,7 @@ const TagInput: React.FC<TagInputProps> = ({
             )}
             {(!onCreateTag || !value.trim()) && "No tags found."}
           </CommandEmpty>
-          {Array.isArray(availableTags) && availableTags.length > 0 && (
+          {availableTags.length > 0 && (
             <CommandGroup>
               {availableTags.map((tag) => (
                 <CommandItem

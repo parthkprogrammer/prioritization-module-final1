@@ -29,7 +29,7 @@ const TaskForm = () => {
       dueTime,
       priority,
       status,
-      tags: Array.isArray(tags) ? tags : [],
+      tags: tags || [], // Ensure tags is always an array
     });
     // Reset form
     setTitle('');
@@ -42,12 +42,18 @@ const TaskForm = () => {
 
   const handleAddTag = (tag: Tag) => {
     if (!tag) return;
-    setTags(prevTags => Array.isArray(prevTags) ? [...prevTags, tag] : [tag]);
+    setTags(prevTags => {
+      const safeArray = Array.isArray(prevTags) ? prevTags : [];
+      return [...safeArray, tag];
+    });
   };
 
   const handleRemoveTag = (tagId: string) => {
     if (!tagId) return;
-    setTags(prevTags => Array.isArray(prevTags) ? prevTags.filter(tag => tag.id !== tagId) : []);
+    setTags(prevTags => {
+      const safeArray = Array.isArray(prevTags) ? prevTags : [];
+      return safeArray.filter(tag => tag?.id !== tagId);
+    });
   };
 
   return (
@@ -122,10 +128,12 @@ const TaskForm = () => {
               onAddTag={handleAddTag}
             />
           </div>
-          <TagList
-            tags={tags || []}
-            onRemoveTag={handleRemoveTag}
-          />
+          {tags && tags.length > 0 && (
+            <TagList
+              tags={tags}
+              onRemoveTag={handleRemoveTag}
+            />
+          )}
         </div>
 
         <Button type="submit" className="w-full md:w-auto">
