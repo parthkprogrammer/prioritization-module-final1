@@ -18,34 +18,30 @@ import {
 import { Button } from "@/components/ui/button";
 import { CheckIcon, PlusCircle } from "lucide-react";
 import { cn } from '@/lib/utils';
+import { useToast } from "@/hooks/use-toast";
 
 interface TagInputProps {
   assignedTags: Tag[];
   onAddTag: (tag: Tag) => void;
-  onCreateTag?: (tagName: string) => Promise<Tag | null>;
   disabled?: boolean;
 }
 
 const TagInput: React.FC<TagInputProps> = ({
-  assignedTags = [], // Default to empty array
+  assignedTags = [],
   onAddTag,
-  onCreateTag,
   disabled = false,
 }) => {
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState("");
   const [availableTags, setAvailableTags] = useState<Tag[]>([]);
+  const { toast } = useToast();
   
-  // Get tags from store and ensure we have a default empty array
-  const { tags = [] } = useTagStore();
+  const { tags, addTag } = useTagStore();
 
-  // Update available tags whenever tags or assignedTags change
   useEffect(() => {
-    // Ensure both arrays are defined before filtering
     const safeAssignedTags = Array.isArray(assignedTags) ? assignedTags : [];
     const safeTags = Array.isArray(tags) ? tags : [];
     
-    // Filter out tags that are already assigned
     const filteredTags = safeTags.filter(
       (tag) => !safeAssignedTags.some((assigned) => assigned?.id === tag?.id)
     );
@@ -53,15 +49,36 @@ const TagInput: React.FC<TagInputProps> = ({
     setAvailableTags(filteredTags);
   }, [tags, assignedTags]);
 
+  const handleCreateNewTag = async (tagName: string) => {
+    const trimmedName = tagName.trim();
+    if (!trimmedName) return null;
+
+    // Generate a random color from a predefined set of Tailwind colors
+    const colors = ['bg-blue-500', 'bg-green-500', 'bg-red-500', 'bg-purple-500', 'bg-yellow-500', 'bg-pink-500'];
+    const randomColor = colors[Math.floor(Math.random() * colors.length)];
+
+    const newTag: Tag = {
+      id: crypto.randomUUID(),
+      name: trimmedName,
+      color: randomColor,
+    };
+
+    addTag(newTag);
+    toast({
+      title: "Tag created",
+      description: `Created new tag: ${trimmedName}`,
+    });
+    return newTag;
+  };
+
   const handleSelect = async (currentValue: string) => {
-    if (currentValue === 'create' && onCreateTag && value.trim()) {
-      const newTag = await onCreateTag(value);
+    if (currentValue === 'create' && value.trim()) {
+      const newTag = await handleCreateNewTag(value);
       if (newTag) {
         onAddTag(newTag);
       }
     } else {
-      const tagArray = Array.isArray(tags) ? tags : [];
-      const selectedTag = tagArray.find((tag) => tag?.id === currentValue);
+      const selectedTag = tags.find((tag) => tag?.id === currentValue);
       if (selectedTag) {
         onAddTag(selectedTag);
       }
@@ -86,13 +103,13 @@ const TagInput: React.FC<TagInputProps> = ({
       <PopoverContent className="w-[200px] p-0">
         <Command>
           <CommandInput
-            placeholder="Search tags..."
+            placeholder="Search or create tag..."
             value={value}
             onValueChange={setValue}
           />
           <CommandList>
             <CommandEmpty className="py-2 px-2 text-sm">
-              {onCreateTag && value.trim() && (
+              {value.trim() && (
                 <Button
                   variant="ghost"
                   className="w-full justify-start"
@@ -102,7 +119,7 @@ const TagInput: React.FC<TagInputProps> = ({
                   Create "{value}"
                 </Button>
               )}
-              {(!onCreateTag || !value.trim()) && "No tags found."}
+              {!value.trim() && "No tags found."}
             </CommandEmpty>
             {availableTags.length > 0 && (
               <CommandGroup>
