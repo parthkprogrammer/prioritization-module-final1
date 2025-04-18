@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import TagList from '@/components/TagList/TagList';
 import { useTaskStore } from '@/store/taskStore';
 import UrgencyIndicator from '@/components/UrgencyIndicator/UrgencyIndicator';
+import EditTaskDialog from '@/components/EditTaskDialog/EditTaskDialog';
 import { PriorityLevel, Tag } from '@/types';
 import { getPriorityStyle } from '@/utils/stylingUtils';
 import { format } from 'date-fns';
@@ -27,13 +28,20 @@ const TaskCard: React.FC<TaskCardProps> = ({
   isUrgent,
 }) => {
   const removeTagFromTask = useTaskStore(state => state.removeTagFromTask);
+  const tasks = useTaskStore(state => state.tasks);
   const priorityStyle = getPriorityStyle(priority);
   
+  const task = tasks.find(t => t.id === id);
+  if (!task) return null;
+  
   return (
-    <Card className="p-4">
+    <Card className="p-4 relative">
       <div className="flex justify-between items-start mb-3">
         <h3 className="text-lg font-medium">{title}</h3>
-        <UrgencyIndicator isUrgent={isUrgent} />
+        <div className="flex items-center gap-2">
+          <EditTaskDialog task={task} />
+          <UrgencyIndicator isUrgent={isUrgent} />
+        </div>
       </div>
       
       <div className="flex flex-wrap gap-2 items-center">

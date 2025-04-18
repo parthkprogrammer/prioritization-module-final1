@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -9,35 +8,63 @@ import TagList from '@/components/TagList/TagList';
 import TagInput from '@/components/TagInput/TagInput';
 import { Label } from "@/components/ui/label";
 import { PriorityLevel, StatusType, Tag } from '@/types';
-import { useTaskStore } from '@/store/taskStore';
+import { useTaskStore, Task } from '@/store/taskStore';
 import { CalendarIcon, Clock } from 'lucide-react';
+import { format } from 'date-fns';
 
-const TaskForm = () => {
+interface TaskFormProps {
+  isEditing?: boolean;
+  existingTask?: Task;
+}
+
+const TaskForm = ({ isEditing = false, existingTask }: TaskFormProps) => {
   const [title, setTitle] = useState('');
   const [dueDate, setDueDate] = useState('');
   const [dueTime, setDueTime] = useState('');
   const [priority, setPriority] = useState<PriorityLevel>('medium');
   const [status, setStatus] = useState<StatusType>('todo');
   const [tags, setTags] = useState<Tag[]>([]);
+  
   const addTask = useTaskStore(state => state.addTask);
+  const updateTask = useTaskStore(state => state.updateTask);
+
+  useEffect(() => {
+    if (isEditing && existingTask) {
+      setTitle(existingTask.title);
+      setDueDate(format(existingTask.dueDate, 'yyyy-MM-dd'));
+      setDueTime(existingTask.dueTime);
+      setPriority(existingTask.priority);
+      setStatus(existingTask.status);
+      setTags(existingTask.tags);
+    }
+  }, [isEditing, existingTask]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    addTask({
+    const taskData = {
       title,
       dueDate: dueDate ? new Date(dueDate) : new Date(),
       dueTime,
       priority,
       status,
-      tags: tags || [], // Ensure tags is always an array
-    });
-    // Reset form
-    setTitle('');
-    setDueDate('');
-    setDueTime('');
-    setPriority('medium');
-    setStatus('todo');
-    setTags([]);
+      tags: tags || [],
+    };
+
+    if (isEditing && existingTask) {
+      updateTask(existingTask.id, taskData);
+    } else {
+      addTask(taskData);
+    }
+
+    // Reset form if not editing
+    if (!isEditing) {
+      setTitle('');
+      setDueDate('');
+      setDueTime('');
+      setPriority('medium');
+      setStatus('todo');
+      setTags([]);
+    }
   };
 
   const handleAddTag = (tag: Tag) => {
@@ -57,8 +84,8 @@ const TaskForm = () => {
   };
 
   return (
-    <Card className="p-6">
-      <h2 className="text-2xl font-bold mb-6">Create Task</h2>
+    <div className={isEditing ? '' : 'card p-6'}>
+      <h2 className="text-2xl font-bold mb-6">{isEditing ? 'Edit Task' : 'Create Task'}</h2>
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="space-y-2">
           <Label htmlFor="title">Title</Label>
@@ -137,10 +164,10 @@ const TaskForm = () => {
         </div>
 
         <Button type="submit" className="w-full md:w-auto">
-          Add Task
+          {isEditing ? 'Update Task' : 'Add Task'}
         </Button>
       </form>
-    </Card>
+    </div>
   );
 };
 
