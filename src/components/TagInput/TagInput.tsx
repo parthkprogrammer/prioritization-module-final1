@@ -87,10 +87,16 @@ const TagInput: React.FC<TagInputProps> = ({
     setOpen(false);
   };
 
-  // Simple click handler for creating a new tag
+  // Create tag directly when clicked
   const handleCreateClick = () => {
     if (value.trim()) {
-      handleSelect('create');
+      handleCreateNewTag(value).then(newTag => {
+        if (newTag) {
+          onAddTag(newTag);
+          setValue("");
+          setOpen(false);
+        }
+      });
     }
   };
 
@@ -118,13 +124,14 @@ const TagInput: React.FC<TagInputProps> = ({
           <CommandList>
             <CommandEmpty className="py-2 px-2 text-sm">
               {value.trim() && (
-                <div 
-                  className="flex items-center px-2 py-1.5 text-sm rounded-sm cursor-pointer hover:bg-accent hover:text-accent-foreground"
+                <button 
+                  className="flex w-full items-center px-2 py-1.5 text-sm rounded-sm cursor-pointer hover:bg-accent hover:text-accent-foreground"
                   onClick={handleCreateClick}
+                  type="button"
                 >
                   <PlusCircle className="mr-2 h-4 w-4" />
                   Create "{value}"
-                </div>
+                </button>
               )}
               {!value.trim() && "No tags found."}
             </CommandEmpty>
