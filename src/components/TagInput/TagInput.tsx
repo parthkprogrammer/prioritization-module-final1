@@ -106,18 +106,19 @@ const TagInput: React.FC<TagInputProps> = ({
             placeholder="Search or create tag..."
             value={value}
             onValueChange={setValue}
+            autoComplete="off"
           />
           <CommandList>
             <CommandEmpty className="py-2 px-2 text-sm">
               {value.trim() && (
-                <Button
-                  variant="ghost"
-                  className="w-full justify-start"
-                  onClick={() => handleSelect('create')}
+                <CommandItem
+                  value="create"
+                  className="cursor-pointer"
+                  onSelect={handleSelect}
                 >
                   <PlusCircle className="mr-2 h-4 w-4" />
                   Create "{value}"
-                </Button>
+                </CommandItem>
               )}
               {!value.trim() && "No tags found."}
             </CommandEmpty>
@@ -128,6 +129,7 @@ const TagInput: React.FC<TagInputProps> = ({
                     key={tag.id}
                     value={tag.id}
                     onSelect={handleSelect}
+                    className="cursor-pointer"
                   >
                     <div
                       className={cn(
