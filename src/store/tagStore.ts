@@ -14,7 +14,7 @@ interface TagStore {
   setError: (error: string | null) => void;
 }
 
-// Initial tags for demo
+// Initial tags for demo - ensuring they're properly typed
 const initialTags: Tag[] = [
   { id: '1', name: 'Work', color: 'bg-blue-500' },
   { id: '2', name: 'Personal', color: 'bg-green-500' },

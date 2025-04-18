@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Tag } from '@/types';
 import { useTagStore } from '@/store/tagStore';
 import {
@@ -26,23 +26,33 @@ interface TagInputProps {
 }
 
 const TagInput: React.FC<TagInputProps> = ({
-  assignedTags = [],
+  assignedTags = [], // Make sure we default to an empty array
   onAddTag,
   onCreateTag,
   disabled = false,
 }) => {
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState("");
+  const [availableTags, setAvailableTags] = useState<Tag[]>([]);
+  
+  // Get tags from store safely
   const tagStore = useTagStore();
   const tags = tagStore?.tags || [];
 
-  // Filter out already assigned tags
-  const availableTags = tags.filter(
-    (tag) => !assignedTags.some((assigned) => assigned.id === tag.id)
-  );
+  // Update available tags whenever tags or assignedTags change
+  useEffect(() => {
+    if (Array.isArray(tags) && Array.isArray(assignedTags)) {
+      const filteredTags = tags.filter(
+        (tag) => !assignedTags.some((assigned) => assigned.id === tag.id)
+      );
+      setAvailableTags(filteredTags);
+    } else {
+      setAvailableTags([]);
+    }
+  }, [tags, assignedTags]);
 
   const handleSelect = async (currentValue: string) => {
-    if (currentValue === 'create' && onCreateTag) {
+    if (currentValue === 'create' && onCreateTag && value.trim()) {
       const newTag = await onCreateTag(value);
       if (newTag) {
         onAddTag(newTag);
@@ -78,7 +88,7 @@ const TagInput: React.FC<TagInputProps> = ({
             onValueChange={setValue}
           />
           <CommandEmpty className="py-2 px-2 text-sm">
-            {onCreateTag && (
+            {onCreateTag && value.trim() && (
               <Button
                 variant="ghost"
                 className="w-full justify-start"
@@ -88,7 +98,7 @@ const TagInput: React.FC<TagInputProps> = ({
                 Create "{value}"
               </Button>
             )}
-            {!onCreateTag && "No tags found."}
+            {(!onCreateTag || !value.trim()) && "No tags found."}
           </CommandEmpty>
           <CommandGroup>
             {availableTags.map((tag) => (
@@ -100,7 +110,7 @@ const TagInput: React.FC<TagInputProps> = ({
                 <div
                   className={cn(
                     "w-2 h-2 rounded-full mr-2",
-                    tag.color
+                    tag.color || "bg-gray-500"
                   )}
                 />
                 {tag.name}
