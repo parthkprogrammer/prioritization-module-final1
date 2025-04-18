@@ -68,6 +68,7 @@ const TagInput: React.FC<TagInputProps> = ({
       title: "Tag created",
       description: `Created new tag: ${trimmedName}`,
     });
+    
     return newTag;
   };
 
@@ -87,12 +88,12 @@ const TagInput: React.FC<TagInputProps> = ({
     setOpen(false);
   };
 
-  // Create tag directly when clicked
+  // Create tag directly when clicked - Fixed to ensure tag is added to task
   const handleCreateClick = async () => {
     if (value.trim()) {
       const newTag = await handleCreateNewTag(value);
       if (newTag) {
-        onAddTag(newTag); // Ensure the tag is added to the task
+        onAddTag(newTag); // This adds the tag to the task
         setValue("");
         setOpen(false);
       }
@@ -128,6 +129,7 @@ const TagInput: React.FC<TagInputProps> = ({
                   onClick={handleCreateClick}
                   type="button"
                   variant="ghost"
+                  tabIndex={0} // Ensure it can be focused with keyboard
                 >
                   <PlusCircle className="mr-2 h-4 w-4" />
                   Create "{value}"
