@@ -26,18 +26,19 @@ interface TagInputProps {
 }
 
 const TagInput: React.FC<TagInputProps> = ({
-  assignedTags,
+  assignedTags = [],
   onAddTag,
   onCreateTag,
   disabled = false,
 }) => {
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState("");
-  const { tags = [] } = useTagStore() || { tags: [] };
+  const tagStore = useTagStore();
+  const tags = tagStore?.tags || [];
 
-  // Ensure we're not filtering undefined values
+  // Filter out already assigned tags
   const availableTags = tags.filter(
-    (tag) => !assignedTags.find((assigned) => assigned.id === tag.id)
+    (tag) => !assignedTags.some((assigned) => assigned.id === tag.id)
   );
 
   const handleSelect = async (currentValue: string) => {
