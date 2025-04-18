@@ -17,6 +17,7 @@ const Index = () => {
           {tasks.map((task) => (
             <TaskCard
               key={task.id}
+              id={task.id}
               title={task.title}
               priority={task.priority}
               dueDate={task.dueDate}

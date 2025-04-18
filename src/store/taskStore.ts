@@ -18,6 +18,7 @@ interface TaskStore {
   addTask: (task: Omit<Task, 'id'>) => void;
   updateTask: (id: string, task: Partial<Task>) => void;
   deleteTask: (id: string) => void;
+  removeTagFromTask: (taskId: string, tagId: string) => void;
 }
 
 export const useTaskStore = create<TaskStore>((set) => ({
@@ -32,5 +33,12 @@ export const useTaskStore = create<TaskStore>((set) => ({
   })),
   deleteTask: (id) => set((state) => ({
     tasks: state.tasks.filter(task => task.id !== id)
+  })),
+  removeTagFromTask: (taskId, tagId) => set((state) => ({
+    tasks: state.tasks.map(task => 
+      task.id === taskId 
+        ? { ...task, tags: task.tags.filter(tag => tag.id !== tagId) }
+        : task
+    )
   })),
 }));

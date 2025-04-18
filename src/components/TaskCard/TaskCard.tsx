@@ -3,12 +3,14 @@ import React from 'react';
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import TagList from '@/components/TagList/TagList';
+import { useTaskStore } from '@/store/taskStore';
 import UrgencyIndicator from '@/components/UrgencyIndicator/UrgencyIndicator';
 import { PriorityLevel, Tag } from '@/types';
 import { getPriorityStyle } from '@/utils/stylingUtils';
 import { format } from 'date-fns';
 
 interface TaskCardProps {
+  id: string;
   title: string;
   priority: PriorityLevel;
   dueDate: Date;
@@ -17,12 +19,14 @@ interface TaskCardProps {
 }
 
 const TaskCard: React.FC<TaskCardProps> = ({
+  id,
   title,
   priority,
   dueDate,
   tags,
   isUrgent,
 }) => {
+  const removeTagFromTask = useTaskStore(state => state.removeTagFromTask);
   const priorityStyle = getPriorityStyle(priority);
   
   return (
@@ -43,7 +47,10 @@ const TaskCard: React.FC<TaskCardProps> = ({
       </div>
       
       <div className="mt-3">
-        <TagList tags={tags} readOnly />
+        <TagList 
+          tags={tags} 
+          onRemoveTag={(tagId) => removeTagFromTask(id, tagId)} 
+        />
       </div>
     </Card>
   );
