@@ -31,21 +31,21 @@ const TagInput: React.FC<TagInputProps> = ({
   onAddTag,
   disabled = false,
 }) => {
-  const [open, setOpen] = useState(false);
-  const [value, setValue] = useState("");
-  const [availableTags, setAvailableTags] = useState<Tag[]>([]);
+  const [open, setOpen] = React.useState(false);
+  const [value, setValue] = React.useState("");
+  const [availableTags, setAvailableTags] = React.useState<Tag[]>([]);
   const { toast } = useToast();
-  
+
   const { tags, addTag } = useTagStore();
 
-  useEffect(() => {
+  React.useEffect(() => {
     const safeAssignedTags = Array.isArray(assignedTags) ? assignedTags : [];
     const safeTags = Array.isArray(tags) ? tags : [];
-    
+
     const filteredTags = safeTags.filter(
       (tag) => !safeAssignedTags.some((assigned) => assigned?.id === tag?.id)
     );
-    
+
     setAvailableTags(filteredTags);
   }, [tags, assignedTags]);
 
@@ -63,26 +63,22 @@ const TagInput: React.FC<TagInputProps> = ({
       color: randomColor,
     };
 
-    // Add tag to the global store
     addTag(newTag);
     toast({
       title: "Tag created",
       description: `Created new tag: ${trimmedName}`,
     });
-    
+
     return newTag;
   };
 
-  // This function handles selecting from the dropdown list
   const handleSelect = async (currentValue: string) => {
     if (currentValue === 'create' && value.trim()) {
-      // Create new tag and add it to the task
       const newTag = await handleCreateNewTag(value);
       if (newTag) {
         onAddTag(newTag);
       }
     } else {
-      // Select existing tag
       const selectedTag = tags.find((tag) => tag?.id === currentValue);
       if (selectedTag) {
         onAddTag(selectedTag);
@@ -92,18 +88,24 @@ const TagInput: React.FC<TagInputProps> = ({
     setOpen(false);
   };
 
-  // This function handles the explicit "Create tag" button click
   const handleCreateClick = async () => {
     if (value.trim()) {
       console.log("Creating new tag:", value);
       const newTag = await handleCreateNewTag(value);
       if (newTag) {
         console.log("New tag created:", newTag);
-        // This is the critical line - ensure we call onAddTag with the new tag
         onAddTag(newTag);
         setValue("");
         setOpen(false);
       }
+    }
+  };
+
+  // Added keyboard handling for enter key to trigger create click on button
+  const handleCreateKeyDown = async (event: React.KeyboardEvent<HTMLButtonElement>) => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      await handleCreateClick();
     }
   };
 
@@ -131,12 +133,13 @@ const TagInput: React.FC<TagInputProps> = ({
           <CommandList>
             <CommandEmpty className="py-2 px-2 text-sm">
               {value.trim() && (
-                <Button 
+                <Button
                   className="flex w-full items-center px-2 py-1.5 text-sm cursor-pointer hover:bg-accent hover:text-accent-foreground"
                   onClick={handleCreateClick}
                   type="button"
                   variant="ghost"
-                  tabIndex={0} // Ensure it can be focused with keyboard
+                  tabIndex={0}
+                  onKeyDown={handleCreateKeyDown} // Added keyboard event handler
                 >
                   <PlusCircle className="mr-2 h-4 w-4" />
                   Create "{value}"
@@ -178,3 +181,4 @@ const TagInput: React.FC<TagInputProps> = ({
 };
 
 export default TagInput;
+
