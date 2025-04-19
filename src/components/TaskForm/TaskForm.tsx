@@ -127,7 +127,7 @@ const TaskForm = ({ isEditing = false, existingTask }: TaskFormProps) => {
   const minuteOptions = Array.from({ length: 60 }, (_, i) => i.toString().padStart(2, '0'));
 
   return (
-    <div className={isEditing ? "max-w-full overflow-auto p-4" : "card p-6"}>
+    <div className={isEditing ? "max-w-full p-4 max-h-[90vh] overflow-auto" : "card p-6"}>
       <h2 className="text-2xl font-bold mb-6">{isEditing ? 'Edit Task' : 'Create Task'}</h2>
       <form onSubmit={handleSubmit} className="space-y-6 min-w-[320px] md:min-w-[400px]">
         <div className="space-y-2">
@@ -236,3 +236,4 @@ const TaskForm = ({ isEditing = false, existingTask }: TaskFormProps) => {
 };
 
 export default TaskForm;
+
