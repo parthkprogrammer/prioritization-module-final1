@@ -101,11 +101,20 @@ const TagInput: React.FC<TagInputProps> = ({
     }
   };
 
-  // Added keyboard handling for enter key to trigger create click on button
   const handleCreateKeyDown = async (event: React.KeyboardEvent<HTMLButtonElement>) => {
     if (event.key === "Enter" || event.key === " ") {
       event.preventDefault();
       await handleCreateClick();
+    }
+  };
+
+  // NEW: Add keyDown on CommandInput to trigger create on Enter key
+  const handleInputKeyDown = async (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      if (value.trim()) {
+        await handleCreateClick();
+      }
     }
   };
 
@@ -129,6 +138,7 @@ const TagInput: React.FC<TagInputProps> = ({
             value={value}
             onValueChange={setValue}
             autoComplete="off"
+            onKeyDown={handleInputKeyDown} // Added keyboard handler on input
           />
           <CommandList>
             <CommandEmpty className="py-2 px-2 text-sm">
@@ -139,7 +149,7 @@ const TagInput: React.FC<TagInputProps> = ({
                   type="button"
                   variant="ghost"
                   tabIndex={0}
-                  onKeyDown={handleCreateKeyDown} // Added keyboard event handler
+                  onKeyDown={handleCreateKeyDown}
                 >
                   <PlusCircle className="mr-2 h-4 w-4" />
                   Create "{value}"
