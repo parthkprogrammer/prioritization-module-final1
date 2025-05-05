@@ -24,6 +24,11 @@ const EditTaskDialog = ({ task }: EditTaskDialogProps) => {
     setOpen(isOpen);
   };
 
+  const handleSuccess = () => {
+    console.log("Task update successful, closing dialog");
+    setOpen(false);
+  };
+
   return (
     <Dialog open={open} onOpenChange={handleDialogChange}>
       <DialogTrigger asChild>
@@ -46,7 +51,7 @@ const EditTaskDialog = ({ task }: EditTaskDialogProps) => {
         <TaskForm 
           isEditing={true} 
           existingTask={task} 
-          onSuccess={() => setOpen(false)}
+          onSuccess={handleSuccess}
         />
       </DialogContent>
     </Dialog>

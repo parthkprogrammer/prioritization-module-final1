@@ -83,24 +83,28 @@ const TagInput: React.FC<TagInputProps> = ({
   };
 
   const handleSelect = (currentValue: string) => {
+    console.log("Selected tag with value:", currentValue);
+    
     if (currentValue === 'create' && value.trim()) {
       const newTag = handleCreateNewTag(value);
       if (newTag) {
         onAddTag(newTag);
+        setOpen(false);
       }
     } else {
       // Find the selected tag by ID and add it
       const selectedTag = tags.find((tag) => tag?.id === currentValue);
       if (selectedTag) {
+        console.log("Adding tag from selection:", selectedTag.name);
         onAddTag(selectedTag);
         setValue("");  // Clear the input after selection
         toast({
           title: "Tag added",
           description: `Added tag: ${selectedTag.name}`,
         });
+        setOpen(false);
       }
     }
-    setOpen(false);
   };
 
   const handleCreateClick = () => {
@@ -130,8 +134,11 @@ const TagInput: React.FC<TagInputProps> = ({
     }
   };
 
-  // Explicitly handle clicking on a tag item
-  const handleTagItemClick = (tagId: string) => {
+  // Fix for tag item click handling
+  const handleTagItemClick = (e: React.MouseEvent<HTMLDivElement>, tagId: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    console.log("Tag item clicked directly with ID:", tagId);
     handleSelect(tagId);
   };
 
@@ -183,21 +190,25 @@ const TagInput: React.FC<TagInputProps> = ({
                     value={tag.id}
                     onSelect={handleSelect}
                     className="cursor-pointer"
-                    onClick={() => handleTagItemClick(tag.id)}
                   >
-                    <div
-                      className={cn(
-                        "w-2 h-2 rounded-full mr-2",
-                        tag.color || "bg-gray-500"
-                      )}
-                    />
-                    {tag.name}
-                    <CheckIcon
-                      className={cn(
-                        "ml-auto h-4 w-4",
-                        value === tag.id ? "opacity-100" : "opacity-0"
-                      )}
-                    />
+                    <div 
+                      onClick={(e) => handleTagItemClick(e, tag.id)}
+                      className="flex items-center w-full"
+                    >
+                      <div
+                        className={cn(
+                          "w-2 h-2 rounded-full mr-2",
+                          tag.color || "bg-gray-500"
+                        )}
+                      />
+                      {tag.name}
+                      <CheckIcon
+                        className={cn(
+                          "ml-auto h-4 w-4",
+                          value === tag.id ? "opacity-100" : "opacity-0"
+                        )}
+                      />
+                    </div>
                   </CommandItem>
                 ))}
               </CommandGroup>
