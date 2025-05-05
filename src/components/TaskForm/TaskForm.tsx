@@ -17,9 +17,10 @@ import { useToast } from "@/hooks/use-toast";
 interface TaskFormProps {
   isEditing?: boolean;
   existingTask?: Task;
+  onSuccess?: () => void;
 }
 
-const TaskForm = ({ isEditing = false, existingTask }: TaskFormProps) => {
+const TaskForm = ({ isEditing = false, existingTask, onSuccess }: TaskFormProps) => {
   const [title, setTitle] = useState('');
   const [dueDate, setDueDate] = useState('');
   const [hour, setHour] = useState('12');
@@ -36,7 +37,7 @@ const TaskForm = ({ isEditing = false, existingTask }: TaskFormProps) => {
   useEffect(() => {
     if (isEditing && existingTask) {
       setTitle(existingTask.title);
-      setDueDate(format(existingTask.dueDate, 'yyyy-MM-dd'));
+      setDueDate(format(new Date(existingTask.dueDate), 'yyyy-MM-dd'));
 
       // Parse existingTask.dueTime in 24h format like "14:30" and convert to hour/minute/ampm
       const parsedTime = existingTask.dueTime;
@@ -94,6 +95,11 @@ const TaskForm = ({ isEditing = false, existingTask }: TaskFormProps) => {
         title: "Task updated",
         description: "Your task has been updated successfully.",
       });
+      
+      // Call onSuccess callback if provided
+      if (onSuccess) {
+        onSuccess();
+      }
     } else {
       addTask(taskData);
       toast({
@@ -112,11 +118,18 @@ const TaskForm = ({ isEditing = false, existingTask }: TaskFormProps) => {
         setStatus('todo');
         setTags([]);
       }
+      
+      // Call onSuccess callback if provided
+      if (onSuccess) {
+        onSuccess();
+      }
     }
   };
 
   const handleAddTag = (tag: Tag) => {
     if (!tag) return;
+    
+    console.log("Adding tag:", tag);
     
     // Check if tag already exists in the array
     const tagExists = tags.some(existingTag => existingTag.id === tag.id);
@@ -132,6 +145,7 @@ const TaskForm = ({ isEditing = false, existingTask }: TaskFormProps) => {
     setTags(prevTags => {
       const safeArray = Array.isArray(prevTags) ? prevTags : [];
       const newTags = [...safeArray, tag];
+      console.log("Updated tags:", newTags);
       return newTags;
     });
     
@@ -146,6 +160,11 @@ const TaskForm = ({ isEditing = false, existingTask }: TaskFormProps) => {
     setTags(prevTags => {
       const safeArray = Array.isArray(prevTags) ? prevTags : [];
       return safeArray.filter(tag => tag?.id !== tagId);
+    });
+    
+    toast({
+      title: "Tag removed",
+      description: "Tag removed from task",
     });
   };
 

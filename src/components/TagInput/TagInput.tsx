@@ -89,12 +89,17 @@ const TagInput: React.FC<TagInputProps> = ({
         onAddTag(newTag);
       }
     } else {
+      // Find the selected tag by ID and add it
       const selectedTag = tags.find((tag) => tag?.id === currentValue);
       if (selectedTag) {
         onAddTag(selectedTag);
+        setValue("");  // Clear the input after selection
+        toast({
+          title: "Tag added",
+          description: `Added tag: ${selectedTag.name}`,
+        });
       }
     }
-    setValue("");
     setOpen(false);
   };
 
@@ -123,6 +128,11 @@ const TagInput: React.FC<TagInputProps> = ({
         handleCreateClick();
       }
     }
+  };
+
+  // Explicitly handle clicking on a tag item
+  const handleTagItemClick = (tagId: string) => {
+    handleSelect(tagId);
   };
 
   return (
@@ -173,6 +183,7 @@ const TagInput: React.FC<TagInputProps> = ({
                     value={tag.id}
                     onSelect={handleSelect}
                     className="cursor-pointer"
+                    onClick={() => handleTagItemClick(tag.id)}
                   >
                     <div
                       className={cn(

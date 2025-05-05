@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -18,8 +18,14 @@ interface EditTaskDialogProps {
 }
 
 const EditTaskDialog = ({ task }: EditTaskDialogProps) => {
+  const [open, setOpen] = useState(false);
+  
+  const handleDialogChange = (isOpen: boolean) => {
+    setOpen(isOpen);
+  };
+
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={handleDialogChange}>
       <DialogTrigger asChild>
         <Button 
           variant="ghost" 
@@ -37,7 +43,11 @@ const EditTaskDialog = ({ task }: EditTaskDialogProps) => {
             Make changes to your task here. Click save when you're done.
           </DialogDescription>
         </DialogHeader>
-        <TaskForm isEditing existingTask={task} />
+        <TaskForm 
+          isEditing={true} 
+          existingTask={task} 
+          onSuccess={() => setOpen(false)}
+        />
       </DialogContent>
     </Dialog>
   );
