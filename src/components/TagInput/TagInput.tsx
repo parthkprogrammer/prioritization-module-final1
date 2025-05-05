@@ -16,7 +16,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
-import { CheckIcon, PlusCircle } from "lucide-react";
+import { CheckIcon, PlusCircle, Tag as TagIcon } from "lucide-react";
 import { cn } from '@/lib/utils';
 import { useToast } from "@/hooks/use-toast";
 
@@ -49,9 +49,19 @@ const TagInput: React.FC<TagInputProps> = ({
     setAvailableTags(filteredTags);
   }, [tags, assignedTags]);
 
-  const handleCreateNewTag = async (tagName: string) => {
+  const handleCreateNewTag = (tagName: string) => {
     const trimmedName = tagName.trim();
     if (!trimmedName) return null;
+
+    // Check if tag with same name already exists
+    const existingTag = tags.find(t => t.name.toLowerCase() === trimmedName.toLowerCase());
+    if (existingTag) {
+      toast({
+        title: "Tag already exists",
+        description: `A tag named "${trimmedName}" already exists.`,
+      });
+      return existingTag;
+    }
 
     // Generate a random color from a predefined set of Tailwind colors
     const colors = ['bg-blue-500', 'bg-green-500', 'bg-red-500', 'bg-purple-500', 'bg-yellow-500', 'bg-pink-500'];
@@ -72,9 +82,9 @@ const TagInput: React.FC<TagInputProps> = ({
     return newTag;
   };
 
-  const handleSelect = async (currentValue: string) => {
+  const handleSelect = (currentValue: string) => {
     if (currentValue === 'create' && value.trim()) {
-      const newTag = await handleCreateNewTag(value);
+      const newTag = handleCreateNewTag(value);
       if (newTag) {
         onAddTag(newTag);
       }
@@ -88,12 +98,10 @@ const TagInput: React.FC<TagInputProps> = ({
     setOpen(false);
   };
 
-  const handleCreateClick = async () => {
+  const handleCreateClick = () => {
     if (value.trim()) {
-      console.log("Creating new tag:", value);
-      const newTag = await handleCreateNewTag(value);
+      const newTag = handleCreateNewTag(value);
       if (newTag) {
-        console.log("New tag created:", newTag);
         onAddTag(newTag);
         setValue("");
         setOpen(false);
@@ -101,19 +109,18 @@ const TagInput: React.FC<TagInputProps> = ({
     }
   };
 
-  const handleCreateKeyDown = async (event: React.KeyboardEvent<HTMLButtonElement>) => {
+  const handleCreateKeyDown = (event: React.KeyboardEvent<HTMLButtonElement>) => {
     if (event.key === "Enter" || event.key === " ") {
       event.preventDefault();
-      await handleCreateClick();
+      handleCreateClick();
     }
   };
 
-  // NEW: Add keyDown on CommandInput to trigger create on Enter key
-  const handleInputKeyDown = async (event: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleInputKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Enter") {
       event.preventDefault();
       if (value.trim()) {
-        await handleCreateClick();
+        handleCreateClick();
       }
     }
   };
@@ -125,10 +132,11 @@ const TagInput: React.FC<TagInputProps> = ({
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-[200px] justify-between"
+          className="w-full md:w-[200px] justify-between flex items-center"
           disabled={disabled}
         >
-          Add tag...
+          <TagIcon className="mr-2 h-4 w-4" />
+          <span className="mr-1">Add tag...</span>
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[200px] p-0">
@@ -138,7 +146,7 @@ const TagInput: React.FC<TagInputProps> = ({
             value={value}
             onValueChange={setValue}
             autoComplete="off"
-            onKeyDown={handleInputKeyDown} // Added keyboard handler on input
+            onKeyDown={handleInputKeyDown}
           />
           <CommandList>
             <CommandEmpty className="py-2 px-2 text-sm">
@@ -191,4 +199,3 @@ const TagInput: React.FC<TagInputProps> = ({
 };
 
 export default TagInput;
-

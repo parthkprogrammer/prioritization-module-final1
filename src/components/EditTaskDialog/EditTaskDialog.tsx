@@ -5,6 +5,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -32,6 +33,9 @@ const EditTaskDialog = ({ task }: EditTaskDialogProps) => {
       <DialogContent className="max-w-2xl">
         <DialogHeader>
           <DialogTitle>Edit Task</DialogTitle>
+          <DialogDescription>
+            Make changes to your task here. Click save when you're done.
+          </DialogDescription>
         </DialogHeader>
         <TaskForm isEditing existingTask={task} />
       </DialogContent>

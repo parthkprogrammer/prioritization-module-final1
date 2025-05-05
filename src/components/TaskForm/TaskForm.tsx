@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -10,7 +11,8 @@ import { Label } from "@/components/ui/label";
 import { PriorityLevel, StatusType, Tag } from '@/types';
 import { useTaskStore, Task } from '@/store/taskStore';
 import { CalendarIcon } from 'lucide-react';
-import { format, parse } from 'date-fns';
+import { format } from 'date-fns';
+import { useToast } from "@/hooks/use-toast";
 
 interface TaskFormProps {
   isEditing?: boolean;
@@ -20,17 +22,16 @@ interface TaskFormProps {
 const TaskForm = ({ isEditing = false, existingTask }: TaskFormProps) => {
   const [title, setTitle] = useState('');
   const [dueDate, setDueDate] = useState('');
-  // Instead of one dueTime string, use hour, minute, ampm controlled inputs:
   const [hour, setHour] = useState('12');
   const [minute, setMinute] = useState('00');
   const [ampm, setAmpm] = useState<'AM' | 'PM'>('AM');
-
   const [priority, setPriority] = useState<PriorityLevel>('medium');
   const [status, setStatus] = useState<StatusType>('todo');
   const [tags, setTags] = useState<Tag[]>([]);
   
   const addTask = useTaskStore(state => state.addTask);
   const updateTask = useTaskStore(state => state.updateTask);
+  const { toast } = useToast();
 
   useEffect(() => {
     if (isEditing && existingTask) {
@@ -60,7 +61,8 @@ const TaskForm = ({ isEditing = false, existingTask }: TaskFormProps) => {
 
       setPriority(existingTask.priority);
       setStatus(existingTask.status);
-      setTags(existingTask.tags);
+      // Ensure we're handling tags correctly
+      setTags(Array.isArray(existingTask.tags) ? [...existingTask.tags] : []);
     }
   }, [isEditing, existingTask]);
 
@@ -88,28 +90,54 @@ const TaskForm = ({ isEditing = false, existingTask }: TaskFormProps) => {
 
     if (isEditing && existingTask) {
       updateTask(existingTask.id, taskData);
+      toast({
+        title: "Task updated",
+        description: "Your task has been updated successfully.",
+      });
     } else {
       addTask(taskData);
-    }
+      toast({
+        title: "Task created",
+        description: "Your new task has been created successfully.",
+      });
 
-    // Reset form if not editing
-    if (!isEditing) {
-      setTitle('');
-      setDueDate('');
-      setHour('12');
-      setMinute('00');
-      setAmpm('AM');
-      setPriority('medium');
-      setStatus('todo');
-      setTags([]);
+      // Reset form if not editing
+      if (!isEditing) {
+        setTitle('');
+        setDueDate('');
+        setHour('12');
+        setMinute('00');
+        setAmpm('AM');
+        setPriority('medium');
+        setStatus('todo');
+        setTags([]);
+      }
     }
   };
 
   const handleAddTag = (tag: Tag) => {
     if (!tag) return;
+    
+    // Check if tag already exists in the array
+    const tagExists = tags.some(existingTag => existingTag.id === tag.id);
+    if (tagExists) {
+      toast({
+        title: "Tag already added",
+        description: `The tag "${tag.name}" is already assigned to this task.`,
+        variant: "destructive"
+      });
+      return;
+    }
+    
     setTags(prevTags => {
       const safeArray = Array.isArray(prevTags) ? prevTags : [];
-      return [...safeArray, tag];
+      const newTags = [...safeArray, tag];
+      return newTags;
+    });
+    
+    toast({
+      title: "Tag added",
+      description: `Added tag: ${tag.name}`,
     });
   };
 
@@ -127,7 +155,6 @@ const TaskForm = ({ isEditing = false, existingTask }: TaskFormProps) => {
 
   return (
     <div className={isEditing ? "max-w-full p-4 max-h-[70vh] overflow-auto" : "card p-6"}>
-      <h2 className="text-2xl font-bold mb-6">{isEditing ? 'Edit Task' : 'Create Task'}</h2>
       <form onSubmit={handleSubmit} className="space-y-6 min-w-[320px] md:min-w-[400px]">
         <div className="space-y-2">
           <Label htmlFor="title">Title</Label>
