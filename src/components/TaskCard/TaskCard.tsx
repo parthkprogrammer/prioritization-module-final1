@@ -10,7 +10,7 @@ import EditTaskDialog from '@/components/EditTaskDialog/EditTaskDialog';
 import { PriorityLevel, Tag } from '@/types';
 import { getPriorityStyle } from '@/utils/stylingUtils';
 import { format } from 'date-fns';
-import { Trash2 } from 'lucide-react';
+import { Trash2, Calendar } from 'lucide-react';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -48,56 +48,68 @@ const TaskCard: React.FC<TaskCardProps> = ({
   const task = tasks.find(t => t.id === id);
   if (!task) return null;
   
+  // Calculate if due date is approaching (within 2 days)
+  const isApproaching = new Date(dueDate).getTime() - new Date().getTime() < 2 * 24 * 60 * 60 * 1000;
+  
   return (
-    <Card className="p-4 relative">
-      <div className="flex justify-between items-start mb-3">
-        <h3 className="text-lg font-medium">{title}</h3>
-        <div className="flex items-center gap-2">
-          <EditTaskDialog task={task} />
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button variant="ghost" size="icon" className="text-red-500 hover:text-red-600 hover:bg-red-100">
-                <Trash2 className="h-4 w-4" />
-                <span className="sr-only">Delete task</span>
-              </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                <AlertDialogDescription>
-                  This action cannot be undone. This will permanently delete the task.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction
-                  onClick={() => deleteTask(id)}
-                  className="bg-red-500 hover:bg-red-600"
-                >
-                  Delete
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
-          <UrgencyIndicator isUrgent={isUrgent} />
+    <Card className="task-card overflow-hidden border border-border hover:shadow-md transition-all duration-200">
+      {/* Priority indicator strip at top */}
+      <div className={`h-1 w-full ${priorityStyle.colorClass} mb-3`} />
+      
+      <div className="px-4 pb-4">
+        <div className="flex justify-between items-start mb-3">
+          <h3 className="text-lg font-heading font-medium">{title}</h3>
+          <div className="flex items-center gap-2">
+            <EditTaskDialog task={task} />
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive/90 hover:bg-destructive/10">
+                  <Trash2 className="h-4 w-4" />
+                  <span className="sr-only">Delete task</span>
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle className="font-heading">Delete Task</AlertDialogTitle>
+                  <AlertDialogDescription className="font-body">
+                    This action cannot be undone. This will permanently delete the task.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel className="font-body">Cancel</AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={() => deleteTask(id)}
+                    className="bg-destructive hover:bg-destructive/90 font-body"
+                  >
+                    Delete
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+            <UrgencyIndicator isUrgent={isUrgent} />
+          </div>
         </div>
-      </div>
-      
-      <div className="flex flex-wrap gap-2 items-center">
-        <Badge className={priorityStyle.colorClass}>
-          {priorityStyle.label}
-        </Badge>
         
-        <Badge variant="outline">
-          Due {format(dueDate, 'MMM d')}
-        </Badge>
-      </div>
-      
-      <div className="mt-3">
-        <TagList 
-          tags={tags} 
-          onRemoveTag={(tagId) => removeTagFromTask(id, tagId)} 
-        />
+        <div className="flex flex-wrap gap-2 items-center mb-3">
+          <Badge className={`${priorityStyle.colorClass} font-caption`}>
+            {priorityStyle.label}
+          </Badge>
+          
+          <Badge 
+            variant={isApproaching ? "destructive" : "outline"} 
+            className="font-caption flex items-center gap-1"
+          >
+            <Calendar className="h-3 w-3" />
+            <span>{format(dueDate, 'MMM d')}</span>
+          </Badge>
+        </div>
+        
+        <div className="mt-3">
+          <TagList 
+            tags={tags} 
+            onRemoveTag={(tagId) => removeTagFromTask(id, tagId)} 
+          />
+        </div>
       </div>
     </Card>
   );

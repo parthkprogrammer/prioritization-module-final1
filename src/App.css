@@ -1,3 +1,4 @@
+
 #root {
   max-width: 1280px;
   margin: 0 auto;
@@ -5,6 +6,69 @@
   text-align: center;
 }
 
+/* Header Section */
+.app-header {
+  margin-bottom: 2.5rem;
+}
+
+.page-title {
+  @apply font-title text-4xl font-bold mb-2;
+  color: #283953;
+}
+
+.dark .page-title {
+  color: #F4A261;
+}
+
+/* Main Content */
+.content-section {
+  @apply bg-card rounded-xl p-6 shadow-lg;
+  margin-bottom: 2rem;
+}
+
+.section-header {
+  @apply font-section text-2xl mb-4 pb-2 border-b;
+}
+
+/* Cards and interactive elements */
+.interactive-card {
+  @apply hover:shadow-lg transition-shadow duration-200;
+}
+
+/* Task cards with hover effects */
+.task-card {
+  @apply border rounded-lg p-4 bg-card transition-all duration-200;
+  border-color: rgba(0, 0, 0, 0.1);
+}
+
+.dark .task-card {
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.task-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.dark .task-card:hover {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
+}
+
+/* Badges and indicators */
+.status-badge {
+  @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+}
+
+/* Multi-state background styles */
+.gradient-bg {
+  background: linear-gradient(135deg, rgba(58, 80, 107, 0.1) 0%, rgba(176, 137, 104, 0.1) 100%);
+}
+
+.dark .gradient-bg {
+  background: linear-gradient(135deg, rgba(244, 162, 97, 0.1) 0%, rgba(42, 157, 143, 0.1) 100%);
+}
+
+/* Keep existing logo styles */
 .logo {
   height: 6em;
   padding: 1.5em;
