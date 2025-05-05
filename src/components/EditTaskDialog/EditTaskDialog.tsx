@@ -20,7 +20,11 @@ const EditTaskDialog = ({ task }: EditTaskDialogProps) => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="ghost" size="icon" className="absolute top-3 right-12">
+        <Button 
+          variant="ghost" 
+          size="icon" 
+          className="text-muted-foreground hover:text-foreground hover:bg-accent"
+        >
           <PencilIcon className="h-4 w-4" />
           <span className="sr-only">Edit task</span>
         </Button>
