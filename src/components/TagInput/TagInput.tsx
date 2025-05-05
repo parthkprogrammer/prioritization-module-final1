@@ -134,12 +134,25 @@ const TagInput: React.FC<TagInputProps> = ({
     }
   };
 
-  // Fix for tag item click handling
-  const handleTagItemClick = (e: React.MouseEvent<HTMLDivElement>, tagId: string) => {
-    e.preventDefault();
-    e.stopPropagation();
+  // Fix for tag item click handling - completely replace the function
+  const handleTagItemClick = (tagId: string) => {
+    if (!tagId) return;
+    
     console.log("Tag item clicked directly with ID:", tagId);
-    handleSelect(tagId);
+    // Find the tag in the available tags list
+    const selectedTag = tags.find(tag => tag.id === tagId);
+    if (selectedTag) {
+      // Directly call onAddTag with the selected tag
+      console.log("Adding tag:", selectedTag);
+      onAddTag(selectedTag);
+      
+      toast({
+        title: "Tag added",
+        description: `Added tag: ${selectedTag.name}`,
+      });
+      
+      setOpen(false);
+    }
   };
 
   return (
@@ -188,13 +201,10 @@ const TagInput: React.FC<TagInputProps> = ({
                   <CommandItem
                     key={tag.id}
                     value={tag.id}
-                    onSelect={handleSelect}
-                    className="cursor-pointer"
+                    className="cursor-pointer flex items-center"
+                    onClick={() => handleTagItemClick(tag.id)}
                   >
-                    <div 
-                      onClick={(e) => handleTagItemClick(e, tag.id)}
-                      className="flex items-center w-full"
-                    >
+                    <div className="flex items-center w-full">
                       <div
                         className={cn(
                           "w-2 h-2 rounded-full mr-2",
