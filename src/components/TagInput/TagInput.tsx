@@ -134,27 +134,6 @@ const TagInput: React.FC<TagInputProps> = ({
     }
   };
 
-  // Fix for tag item click handling - completely replace the function
-  const handleTagItemClick = (tagId: string) => {
-    if (!tagId) return;
-    
-    console.log("Tag item clicked directly with ID:", tagId);
-    // Find the tag in the available tags list
-    const selectedTag = tags.find(tag => tag.id === tagId);
-    if (selectedTag) {
-      // Directly call onAddTag with the selected tag
-      console.log("Adding tag:", selectedTag);
-      onAddTag(selectedTag);
-      
-      toast({
-        title: "Tag added",
-        description: `Added tag: ${selectedTag.name}`,
-      });
-      
-      setOpen(false);
-    }
-  };
-
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
@@ -201,8 +180,8 @@ const TagInput: React.FC<TagInputProps> = ({
                   <CommandItem
                     key={tag.id}
                     value={tag.id}
-                    className="cursor-pointer flex items-center"
-                    onClick={() => handleTagItemClick(tag.id)}
+                    onSelect={handleSelect}
+                    className="cursor-pointer"
                   >
                     <div className="flex items-center w-full">
                       <div
