@@ -14,11 +14,11 @@ interface TagStore {
   setError: (error: string | null) => void;
 }
 
-// Initial tags for demo - ensuring they're properly typed
+// Initial tags with theme-aligned colors
 const initialTags: Tag[] = [
-  { id: '1', name: 'Work', color: 'bg-blue-500' },
-  { id: '2', name: 'Personal', color: 'bg-green-500' },
-  { id: '3', name: 'Urgent', color: 'bg-red-500' },
+  { id: '1', name: 'Work', color: 'bg-primary' },
+  { id: '2', name: 'Personal', color: 'bg-secondary' },
+  { id: '3', name: 'Urgent', color: 'bg-rose-500' },
   { id: '4', name: 'Meeting', color: 'bg-purple-500' },
 ];
 

@@ -29,7 +29,7 @@ const TagList: React.FC<TagListProps> = ({
         <Badge
           key={tag.id}
           className={cn(
-            "inline-flex items-center",
+            "inline-flex items-center text-white",
             tag.color || "bg-gray-500",
             !readOnly && "pr-1"
           )}
@@ -38,7 +38,7 @@ const TagList: React.FC<TagListProps> = ({
           {!readOnly && onRemoveTag && (
             <button
               onClick={() => onRemoveTag(tag.id)}
-              className="ml-1 rounded-full hover:bg-background/80"
+              className="ml-1 rounded-full hover:bg-background/20"
             >
               <X className="h-3 w-3" />
               <span className="sr-only">Remove tag</span>

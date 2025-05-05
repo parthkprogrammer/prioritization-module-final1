@@ -63,9 +63,23 @@ const TagInput: React.FC<TagInputProps> = ({
       return existingTag;
     }
 
-    // Generate a random color from a predefined set of Tailwind colors
-    const colors = ['bg-blue-500', 'bg-green-500', 'bg-red-500', 'bg-purple-500', 'bg-yellow-500', 'bg-pink-500'];
-    const randomColor = colors[Math.floor(Math.random() * colors.length)];
+    // Generate a color from a predefined set of theme-aligned colors
+    const themeColors = [
+      'bg-primary', 
+      'bg-secondary',
+      'bg-accent',
+      'bg-blue-500', 
+      'bg-green-500',
+      'bg-purple-500', 
+      'bg-rose-500',
+      'bg-amber-500',
+      'bg-indigo-500',
+      'bg-emerald-500',
+      'bg-cyan-500',
+      'bg-teal-500',
+      'bg-orange-500'
+    ];
+    const randomColor = themeColors[Math.floor(Math.random() * themeColors.length)];
 
     const newTag: Tag = {
       id: crypto.randomUUID(),
